@@ -1,0 +1,22 @@
+---
+version: '2'
+services:
+    packer-rancheros:
+        image: jcpowermac/packer-rancheros
+# Privileged is required to execute a QEMU/KVM virtual machine in the container  
+        privileged: true
+        ports:
+            - "0.0.0.0:5910:5910"
+            - "0.0.0.0:5911:5911"
+        command: build -only rancher-offline,rancher-online -var 'device=/dev/sda' /opt/hashicorp/etc/packer/rancheros.json
+# This commented environment variable will enable debug logging for Packer
+#       environment:
+#           PACKER_LOG: 1    
+# The named volume `build` is the location of the output from Packer
+        volumes: 
+            - build:/build
+            - /dev/kvm:/dev/kvm:rw
+            - /dev/net/tun:/dev/net/tun:rw
+
+volumes:
+  build:

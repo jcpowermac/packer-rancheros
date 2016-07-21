@@ -1,0 +1,128 @@
+{
+"provisioners": [
+{
+  "type": "file",
+  "source": "/opt/hashicorp/etc/packer/cloud-config.yml",
+  "destination": "/tmp/cloud-config.yml"
+},
+{
+  "type": "shell",
+  "inline": ["sudo ros install -c /tmp/cloud-config.yml -d {{user `device`}} -f -t generic --no-reboot"]
+},
+{
+  "type": "shell",
+  "inline": ["sudo docker pull jcpowermac/alpine-ansible-ssh", 
+      "sudo docker pull jcpowermac/alpine-butterfly",
+      "sudo mkdir -p /mnt/img",
+      "sudo mount /dev/sda1 /mnt/img",
+      "sudo mkdir -p /mnt/img/var/lib/rancher/preload/docker",
+      "sudo docker save -o /mnt/img/var/lib/rancher/preload/docker/ansible.tar jcpowermac/alpine-ansible-ssh jcpowermac/alpine-butterfly"
+  ],
+  "only": ["rancher-offline"]
+}
+],
+"builders": [{
+      "name": "rancheros-virtio",
+      "type": "qemu",
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "58ca14b497178097d716ecd5d06332c4c2f6b9c5a127cf88453a5d22742835d4",
+      "iso_url": "https://github.com/rancher/os/releases/download/v0.5.0/rancheros.iso",
+      "output_directory": "/build/output",
+      "ssh_wait_timeout": "30s",
+      "shutdown_command": "sudo poweroff",
+      "disk_size": 8192,
+      "format": "qcow2",
+      "headless": true,
+      "accelerator": "kvm",
+      "ssh_host_port_min": 2222,
+      "ssh_host_port_max": 2229,
+      "ssh_username": "rancher",
+      "ssh_password": "rancher",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "90m",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "vnc_port_min": 5900,
+      "vnc_port_max": 5900,
+      "qemu_binary": "/usr/libexec/qemu-kvm",
+      "qemuargs": [
+          [ "-m", "1024M" ]
+        ]
+    },
+    { 
+      "name": "rancher-online",
+      "type": "qemu",
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "{{ user `iso_checksum`}}",
+      "iso_url": "{{ user `iso_url`}}",
+      "output_directory": "/build/output",
+      "ssh_wait_timeout": "30s",
+      "shutdown_command": "sudo poweroff",
+      "disk_size": 8192,
+      "format": "qcow2",
+      "headless": true,
+      "accelerator": "kvm",
+      "ssh_host_port_min": 2222,
+      "ssh_host_port_max": 2229,
+      "ssh_username": "rancher",
+      "ssh_password": "rancher",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "90m",
+      "net_device": "e1000",
+      "disk_interface": "scsi",
+      "vnc_port_min": 5910,
+      "vnc_port_max": 5910,
+      "qemuargs": [
+          [ "-m", "1024M" ]
+        ]
+    },
+    { 
+      "name": "rancher-offline",
+      "type": "qemu",
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "{{ user `iso_checksum`}}",
+      "iso_url": "{{ user `iso_url`}}",
+      "output_directory": "/build/output",
+      "ssh_wait_timeout": "30s",
+      "shutdown_command": "sudo poweroff",
+      "disk_size": 8192,
+      "format": "qcow2",
+      "headless": true,
+      "accelerator": "kvm",
+      "ssh_host_port_min": 2222,
+      "ssh_host_port_max": 2229,
+      "ssh_username": "rancher",
+      "ssh_password": "rancher",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "90m",
+      "net_device": "e1000",
+      "disk_interface": "scsi",
+      "vnc_port_min": 5911,
+      "vnc_port_max": 5911,
+      "qemuargs": [
+          [ "-m", "2048M" ]
+        ]
+    }],
+"post-processors": [
+    {
+        "type": "shell-local",
+        "inline": "qemu-img convert -f qcow2 -O vmdk /build/output/packer-{{build_name}} /build/output/{{build_name}}.vmdk",
+        "only": ["rancher-online","rancher-offline"]
+    },
+    {
+        "type": "shell-local",
+        "inline": "cot -f edit-product /opt/hashicorp/etc/packer/minimal.ovf -o /build/output/{{build_name}}.ovf -p RancherOS -n Rancher -v 0.5.0",
+        "only": ["rancher-online","rancher-offline"]
+    },
+    {
+        "type": "shell-local",
+        "inline": "cot -f edit-hardware /build/output/{{build_name}}.ovf -v vmx-8 -c 1 -m 4G -n 1 --nic-types e1000 --nic-names eth0 --nic-networks eth0 --network-descriptions \"Management Network\"",
+        "only": ["rancher-online","rancher-offline"]
+    },
+    {
+        "type": "shell-local",
+        "inline": "cot -f add-disk /build/output/{{build_name}}.vmdk /build/output/{{build_name}}.ovf -t harddisk -c scsi",
+        "only": ["rancher-online","rancher-offline"]
+    }
+]
+}

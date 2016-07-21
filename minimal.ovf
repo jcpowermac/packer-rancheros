@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ovf:Envelope xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:vmw="http://www.vmware.com/schema/ovf">
+  <ovf:References />
+  <ovf:VirtualSystem ovf:id="vmw">
+    <ovf:Info />
+    <ovf:VirtualHardwareSection>
+      <ovf:Info />
+    </ovf:VirtualHardwareSection>
+  </ovf:VirtualSystem>
+</ovf:Envelope>
