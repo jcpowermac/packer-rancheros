@@ -1,19 +1,12 @@
 #cloud-config
 ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDlrcxixjMKV4I9c4dlhddYipV9mMbCkA4UM/oQbo/JG1fhnNdNxQWN0WB2UEAXaepPPJpFh5Do2P4YApjSRSN9J5pCktF+bHh3lb5t5n8GuvRzSfmBBAoBY6efyWU+86TF/7OwtQz0ADDK56VoTW9/N5iTlbGcKSQk5XmPDkRInzbPmj9/0a4yP/km4ytu5viueCT3rEOfcogWZdc6TYqc+zznYWT5PpEU6DUIQxiu5oyH5ToHICnwxehfyFv5qXauH1Z6+CQ4hFRgJFPUO2DjG8E8qiTziEN8jP6GjucMBpi2hYADlHHAIQkDOfku/ulvifQfc0qS5/4ghL/0/08l jcallen@silicon.virtomation.com
-rancher:
-    services: 
-        alpine-ansible-ssh:
-            image: jcpowermac/alpine-ansible-ssh 
-            ports:
-                - 2222:22
-            restart: always
-            volumes:
-                - projects:/home/ansible/projects
-        alpine-butterfly:
-            image: jcpowermac/alpine-butterfly 
-            ports:
-                - 57575:57575  
-            restart: always
-            volumes:
-                - projects:/home/ansible/projects
+    -  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFnQfZWlru+nZBHMWel43bVOyQmc2BWuguVXpi4bF+WSXJe5gOsLjccYfNLE1X44s61rWq6TL17JGaQO3OF67yC7XGGTrcEYl8ddN21xu63ldlX4PUPdn6/ZFHo0gN+O6QV3o44NdOqDiNyI0z/3tP5X32s8morUQwinWINddz0tnLwiyZpzyn1qU3bsHYS1PK0TXP7wmUj2e6bBwUS6geiV7toEyE9KGPaGev6dqv9fuUgKoj5fUCNpvRnYee62Hn8Neg10RpqaOAl8HrWrQ5x+tRCy+y66OBu14dhfrFN0U1kW84mQaYSAC85fMIDg4Iqh8Pdlg6RfJNuUNGdeIG1kFm+ZvSpPo934R/QSQ7g0sJi51WK4Jpbqkhi/OvNoroDz9RjJlccTiCJogrtjtg1EsT4Wtlld0vz+ddXHbh34FGxlmm4WZh4r4jt5kxYmecCfcFSYe2qLRs1TI68IV2igCLPbJW7t3HaAvD8kbXrwFlHu3R/4jCqtq6X0mWlVCk9wkkD8ooOERTXyYeSAzK8Apdaz755wTm9SVoLkKxH/32GEDJUBBWpDQI5KX09Hzg+X4wNwlhsygLinLpT37N5IP9kPZxNyOlDuHbh/6z7XsGafoFFZi2Q+tUfMDjYeYCnGEyKUehXdRSZKC5kWcQHxFcanGazNCkB+Zmx+KXbQ== rancheros
+#rancher:
+#    services: 
+#        service1:
+#            image: docker_image1
+#            ports:
+#                - 2222:22
+#            restart: always
+#            volumes:
+#                - projects:/projects
